@@ -2,7 +2,7 @@ const path = require("path");
 require("dotenv").config({ path: path.join(__dirname, ".env") });
 
 module.exports = {
-  PORT: process.env.PORT || 3738,
+  PORT: process.env.PORT || 5000,
   NODE_ENV: process.env.NODE_ENV || "development",
 
   MONGODB_URI:
@@ -14,7 +14,10 @@ module.exports = {
 
   COOKIE_MAX_AGE: 3 * 24 * 60 * 60 * 1000,
 
-  ALLOWED_ORIGINS: (process.env.ALLOWED_ORIGINS || "")
+  ALLOWED_ORIGINS: (
+    process.env.ALLOWED_ORIGINS ||
+    "https://secureauth.giftedtech.co.ke,http://localhost:5000,https://yourdomain.com"
+  )
     .split(",")
     .map((o) => o.trim())
     .filter(Boolean),
