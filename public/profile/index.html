@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profile — SecureAuth</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/assets/style.css" />
+</head>
+<body class="min-h-screen flex flex-col bg-gray-50">
+
+  <!-- ── HEADER ── -->
+  <header class="fixed top-0 left-0 right-0 h-16 bg-white/80 backdrop-blur-md border-b border-gray-200/60 z-[60] flex items-center px-4 gap-3 shadow-sm rounded-b-2xl">
+    <button id="hamburger" class="md:hidden p-2 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-colors">
+      <i class="fas fa-bars text-lg"></i>
+    </button>
+    <a href="/" class="font-extrabold text-xl text-gray-900 tracking-tight flex items-center gap-2">
+      <div class="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
+        <i class="fas fa-lock text-white text-xs"></i>
+      </div>
+      Secure<span class="text-blue-600">Auth</span>
+    </a>
+    <nav class="hidden md:flex items-center gap-1 ml-6">
+      <a href="/" class="nav-dashboard nav-link px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all">Dashboard</a>
+      <a href="/admin" id="admin-nav-link" style="display:none" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all">Admin</a>
+    </nav>
+    <div class="ml-auto relative">
+      <button id="user-menu-btn" class="flex items-center gap-1.5 p-1.5 rounded-lg hover:bg-gray-100 transition-colors">
+        <div class="w-8 h-8 rounded-full overflow-hidden bg-blue-600 flex items-center justify-center">
+          <i class="fas fa-user text-white text-sm" id="header-user-icon"></i>
+          <img id="header-avatar" src="" alt="" class="w-full h-full object-cover hidden">
+        </div>
+        <i class="fas fa-chevron-down text-gray-400 text-xs hidden md:block"></i>
+      </button>
+      <div id="user-dropdown" class="hidden absolute right-0 top-12 w-52 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-[80]">
+        <div id="guest-links">
+          <a href="/login" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"><i class="fas fa-sign-in-alt text-gray-400 w-4 text-center"></i> Login</a>
+          <a href="/signup" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"><i class="fas fa-user-plus text-gray-400 w-4 text-center"></i> Register</a>
+        </div>
+        <div id="auth-links" class="hidden">
+          <div class="px-4 py-2.5 border-b border-gray-100">
+            <p class="text-xs text-gray-500">Signed in as</p>
+            <p class="text-sm font-semibold text-gray-900 truncate" id="header-username"></p>
+          </div>
+          <a href="/" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"><i class="fas fa-chart-bar text-gray-400 w-4 text-center"></i> Dashboard</a>
+          <a href="/profile" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"><i class="fas fa-user-circle text-gray-400 w-4 text-center"></i> Profile</a>
+          <a href="/admin" id="admin-dropdown-link" style="display:none" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"><i class="fas fa-shield-alt text-gray-400 w-4 text-center"></i> Admin Panel</a>
+          <div class="border-t border-gray-100 mt-1 pt-1">
+            <button id="logout-btn" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors"><i class="fas fa-sign-out-alt w-4 text-center"></i> Logout</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ── SIDEBAR OVERLAY ── -->
+  <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-[50] hidden opacity-0 transition-opacity duration-300"></div>
+
+  <!-- ── SIDEBAR ── -->
+  <div id="sidebar" class="fixed top-0 left-0 right-0 z-[70] bg-white/90 backdrop-blur-md shadow-2xl -translate-y-full transition-transform duration-300 ease-out max-h-[85vh] overflow-y-auto rounded-b-3xl">
+    <div class="p-5">
+      <div class="flex items-center justify-between mb-6">
+        <a href="/" class="font-extrabold text-xl text-gray-900 tracking-tight flex items-center gap-2">
+            <div class="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
+              <i class="fas fa-lock text-white text-xs"></i>
+            </div>
+            Secure<span class="text-blue-600">Auth</span>
+          </a>
+        <button id="sidebar-close" class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+          <i class="fas fa-times text-gray-600 text-lg"></i>
+        </button>
+      </div>
+      <nav class="flex flex-col gap-1 mb-4">
+        <a href="/" class="nav-dashboard nav-link flex items-center gap-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-all font-medium"><i class="fas fa-chart-bar w-5 text-center"></i> Dashboard</a>
+        <a href="/profile" class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-all font-medium"><i class="fas fa-user w-5 text-center"></i> Profile</a>
+        <a href="/admin" id="sidebar-admin-link" style="display:none" class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-all font-medium"><i class="fas fa-shield-alt w-5 text-center"></i> Admin</a>
+      </nav>
+      <div class="border-t border-gray-100 pt-4">
+        <div id="sidebar-guest" class="flex gap-3">
+          <a href="/login" class="flex-1 bg-blue-600 text-white text-center py-2.5 rounded-xl font-semibold text-sm hover:bg-blue-700 transition-colors">Login</a>
+          <a href="/signup" class="flex-1 border border-gray-200 text-gray-700 text-center py-2.5 rounded-xl font-semibold text-sm hover:bg-gray-50 transition-colors">Sign Up</a>
+        </div>
+        <div id="sidebar-user" class="hidden">
+          <div class="flex items-center gap-3 bg-gray-50 rounded-xl p-3 mb-3">
+            <div class="w-10 h-10 rounded-full overflow-hidden bg-blue-600 flex items-center justify-center flex-shrink-0">
+              <i class="fas fa-user text-white text-sm" id="sidebar-user-icon"></i>
+              <img id="sidebar-avatar" src="" alt="" class="w-full h-full object-cover hidden">
+            </div>
+            <div class="min-w-0">
+              <div class="font-semibold text-sm text-gray-900 truncate" id="sidebar-username"></div>
+              <div class="text-xs text-gray-500 truncate" id="sidebar-email"></div>
+            </div>
+          </div>
+          <button id="sidebar-logout" class="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-red-50 text-red-600 font-semibold text-sm hover:bg-red-100 transition-colors">
+            <i class="fas fa-sign-out-alt"></i> Logout
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── MAIN ── -->
+  <main class="flex-1 pt-16">
+    <div class="max-w-2xl mx-auto px-4 py-8">
+
+      <!-- Page title + avatar hero -->
+      <div class="flex items-center gap-5 mb-6" data-aos="fade-up">
+        <div class="relative flex-shrink-0">
+          <!-- Circular avatar -->
+          <div class="w-20 h-20 rounded-full overflow-hidden bg-blue-100 flex items-center justify-center shadow ring-4 ring-white">
+            <i class="fas fa-user text-blue-400 text-2xl" id="avatar-icon"></i>
+            <img id="avatar-img" src="" alt="avatar" class="w-full h-full object-cover hidden">
+          </div>
+          <label for="avatar-input" class="absolute -bottom-1 -right-1 w-7 h-7 bg-blue-600 rounded-full flex items-center justify-center cursor-pointer shadow hover:bg-blue-700 transition-colors" title="Change avatar">
+            <i class="fas fa-camera text-white text-xs"></i>
+          </label>
+          <input type="file" id="avatar-input" accept="image/*" class="hidden" />
+        </div>
+        <div class="flex-1 min-w-0">
+          <h1 class="text-2xl font-black text-gray-900" id="disp-username">—</h1>
+          <p class="text-gray-500 text-sm truncate" id="disp-email">—</p>
+          <div class="mt-2" id="disp-badge"></div>
+        </div>
+      </div>
+
+      <!-- Update Picture button (appears after crop) -->
+      <div id="update-pic-wrap" class="hidden mb-4">
+        <div class="flex items-center gap-3 bg-blue-50 border border-blue-200 rounded-xl px-4 py-3">
+          <i class="fas fa-image text-blue-500"></i>
+          <span class="text-sm text-blue-700 font-medium flex-1">New profile picture ready — save it to your account.</span>
+          <button id="update-pic-btn" class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold px-4 py-2 rounded-xl transition-all">
+            <i class="fas fa-cloud-upload-alt"></i> Update Picture
+          </button>
+        </div>
+      </div>
+
+      <!-- ── TABS ── -->
+      <div class="bg-white rounded-2xl border border-gray-100 shadow-sm" data-aos="fade-up" data-aos-delay="50">
+        <!-- Tab bar -->
+        <div class="flex border-b border-gray-100 overflow-x-auto no-scrollbar">
+          <button onclick="switchTab('profile')" id="tab-profile"
+            class="tab-btn flex items-center gap-2 px-5 py-3.5 text-sm font-semibold text-blue-600 border-b-2 border-blue-600 whitespace-nowrap transition-all">
+            <i class="fas fa-user-circle"></i> Profile
+          </button>
+          <button onclick="switchTab('security')" id="tab-security"
+            class="tab-btn flex items-center gap-2 px-5 py-3.5 text-sm font-semibold text-gray-500 border-b-2 border-transparent hover:text-blue-600 whitespace-nowrap transition-all">
+            <i class="fas fa-lock"></i> Security
+          </button>
+          <button onclick="switchTab('account')" id="tab-account"
+            class="tab-btn flex items-center gap-2 px-5 py-3.5 text-sm font-semibold text-gray-500 border-b-2 border-transparent hover:text-blue-600 whitespace-nowrap transition-all">
+            <i class="fas fa-info-circle"></i> Account
+          </button>
+        </div>
+
+        <!-- ── PANEL: Profile ── -->
+        <div id="panel-profile" class="p-6">
+          <form id="profile-form" class="space-y-4">
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-1.5">Username</label>
+              <input type="text" id="username-input"
+                class="w-full px-4 py-3 border border-gray-100 rounded-xl text-sm bg-gray-50 text-gray-400 cursor-not-allowed"
+                disabled />
+              <p class="text-xs text-gray-400 mt-1"><i class="fas fa-lock mr-1"></i>Username cannot be changed</p>
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-1.5">Email address</label>
+              <input type="email" id="email-input"
+                class="w-full px-4 py-3 border border-gray-100 rounded-xl text-sm bg-gray-50 text-gray-400 cursor-not-allowed"
+                disabled />
+              <p class="text-xs text-gray-400 mt-1"><i class="fas fa-lock mr-1"></i>Email cannot be changed</p>
+            </div>
+            <div>
+              <label for="phone-input" class="block text-sm font-semibold text-gray-700 mb-1.5">Phone number <span class="font-normal text-gray-400">(optional)</span></label>
+              <div class="relative">
+                <i class="fas fa-phone absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                <input type="tel" id="phone-input"
+                  class="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-gray-50 focus:bg-white"
+                  placeholder="254712345678" />
+              </div>
+              <p class="text-xs text-gray-400 mt-1.5"><i class="fas fa-info-circle mr-1"></i>8–15 digits with country code, no spaces or symbols</p>
+              <p class="field-error text-xs text-red-500 mt-1 hidden" id="phone-err"></p>
+            </div>
+            <div class="flex items-center gap-3 pt-1">
+              <button type="submit" id="save-btn"
+                class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-2.5 rounded-xl transition-all">
+                <i class="fas fa-save"></i> Save Changes
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- ── PANEL: Security ── -->
+        <div id="panel-security" class="p-6 hidden">
+          <p class="text-sm text-gray-500 mb-5">Choose a strong, unique password you don't use elsewhere.</p>
+          <div class="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 mb-5 flex gap-3 items-start">
+            <i class="fas fa-triangle-exclamation text-amber-500 mt-0.5 flex-shrink-0"></i>
+            <p class="text-sm text-amber-700">Changing your password will log you out immediately. You will need to log back in with the new password.</p>
+          </div>
+          <form id="password-form" class="space-y-4">
+            <div>
+              <label for="current-pw" class="block text-sm font-semibold text-gray-700 mb-1.5">Current password</label>
+              <div class="relative">
+                <i class="fas fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                <input type="password" id="current-pw"
+                  class="w-full pl-10 pr-12 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-gray-50 focus:bg-white"
+                  placeholder="Your current password" autocomplete="current-password" />
+                <button type="button" class="toggle-pw-btn absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600" data-target="current-pw"><i class="fas fa-eye text-sm"></i></button>
+              </div>
+            </div>
+            <div>
+              <label for="new-pw" class="block text-sm font-semibold text-gray-700 mb-1.5">New password</label>
+              <div class="relative">
+                <i class="fas fa-key absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                <input type="password" id="new-pw"
+                  class="w-full pl-10 pr-12 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-gray-50 focus:bg-white"
+                  placeholder="Create a strong password" autocomplete="new-password" />
+                <button type="button" class="toggle-pw-btn absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600" data-target="new-pw"><i class="fas fa-eye text-sm"></i></button>
+              </div>
+              <div class="mt-2.5 grid grid-cols-2 gap-x-3 gap-y-1">
+                <div class="rule flex items-center gap-1.5 text-xs text-gray-400" id="pw-rule-len"><i class="fas fa-circle text-[7px]"></i> 8+ characters</div>
+                <div class="rule flex items-center gap-1.5 text-xs text-gray-400" id="pw-rule-upper"><i class="fas fa-circle text-[7px]"></i> Uppercase (A-Z)</div>
+                <div class="rule flex items-center gap-1.5 text-xs text-gray-400" id="pw-rule-lower"><i class="fas fa-circle text-[7px]"></i> Lowercase (a-z)</div>
+                <div class="rule flex items-center gap-1.5 text-xs text-gray-400" id="pw-rule-num"><i class="fas fa-circle text-[7px]"></i> Number (0-9)</div>
+                <div class="rule flex items-center gap-1.5 text-xs text-gray-400 col-span-2" id="pw-rule-special"><i class="fas fa-circle text-[7px]"></i> Special character (!@#$%...)</div>
+              </div>
+            </div>
+            <div>
+              <label for="confirm-pw" class="block text-sm font-semibold text-gray-700 mb-1.5">Confirm new password</label>
+              <div class="relative">
+                <i class="fas fa-key absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                <input type="password" id="confirm-pw"
+                  class="w-full pl-10 pr-12 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-gray-50 focus:bg-white"
+                  placeholder="Repeat new password" autocomplete="new-password" />
+                <button type="button" class="toggle-pw-btn absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600" data-target="confirm-pw"><i class="fas fa-eye text-sm"></i></button>
+              </div>
+            </div>
+            <button type="submit" id="pw-btn"
+              class="inline-flex items-center gap-2 bg-rose-600 hover:bg-rose-700 text-white font-bold px-6 py-2.5 rounded-xl transition-all">
+              <i class="fas fa-key"></i> Update Password
+            </button>
+          </form>
+        </div>
+
+        <!-- ── PANEL: Account ── -->
+        <div id="panel-account" class="p-6 hidden">
+          <div class="space-y-0">
+            <div class="flex justify-between items-center py-3 border-b border-gray-50">
+              <span class="text-sm text-gray-500 flex items-center gap-2"><i class="fas fa-user w-4 text-center text-gray-400"></i> Username</span>
+              <span class="text-sm font-semibold text-gray-800" id="info-username">—</span>
+            </div>
+            <div class="flex justify-between items-center py-3 border-b border-gray-50">
+              <span class="text-sm text-gray-500 flex items-center gap-2"><i class="fas fa-envelope w-4 text-center text-gray-400"></i> Email</span>
+              <span class="text-sm font-semibold text-gray-800 truncate max-w-[60%] text-right" id="info-email">—</span>
+            </div>
+            <div class="flex justify-between items-center py-3 border-b border-gray-50">
+              <span class="text-sm text-gray-500 flex items-center gap-2"><i class="fas fa-phone w-4 text-center text-gray-400"></i> Phone</span>
+              <span class="text-sm font-semibold text-gray-800" id="info-phone">—</span>
+            </div>
+            <div class="flex justify-between items-center py-3 border-b border-gray-50">
+              <span class="text-sm text-gray-500 flex items-center gap-2"><i class="fas fa-shield-alt w-4 text-center text-gray-400"></i> Role</span>
+              <span id="info-role">—</span>
+            </div>
+            <div class="flex justify-between items-center py-3 border-b border-gray-50">
+              <span class="text-sm text-gray-500 flex items-center gap-2"><i class="fas fa-calendar w-4 text-center text-gray-400"></i> Member since</span>
+              <span class="text-sm font-semibold text-gray-800" id="info-joined">—</span>
+            </div>
+            <div class="flex justify-between items-center py-3">
+              <span class="text-sm text-gray-500 flex items-center gap-2"><i class="fas fa-circle w-4 text-center text-gray-400"></i> Status</span>
+              <span class="inline-flex items-center gap-1.5 text-xs font-bold bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full"><i class="fas fa-circle text-[8px]"></i> Active</span>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- end card -->
+    </div>
+  </main>
+
+  <!-- ── FOOTER ── -->
+  <footer class="bg-gray-50 border-t border-gray-100 text-gray-500 py-5 text-center text-sm mt-auto rounded-t-2xl">
+    <p>© <span id="year"></span> SecureAuth. All rights reserved.</p>
+  </footer>
+
+  <!-- ── SCROLL-TO-TOP BUTTON ── -->
+  <button id="scroll-top-btn"
+    onclick="window.scrollTo({top:0,behavior:'smooth'})"
+    title="Back to top"
+    class="fixed bottom-6 right-6 z-[90] group w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 opacity-0 pointer-events-none translate-y-4">
+    <svg class="absolute inset-0 w-14 h-14 -rotate-90" viewBox="0 0 56 56" aria-hidden="true">
+      <circle cx="28" cy="28" r="24" fill="none" stroke="#dbeafe" stroke-width="3"/>
+      <circle id="scroll-ring" cx="28" cy="28" r="24" fill="none" stroke="#2563eb" stroke-width="3"
+        stroke-dasharray="150.8" stroke-dashoffset="150.8" stroke-linecap="round"
+        style="transition: stroke-dashoffset 0.15s ease"/>
+    </svg>
+    <div class="relative w-10 h-10 bg-blue-600 group-hover:bg-blue-700 rounded-full flex flex-col items-center justify-center gap-0.5 transition-colors shadow-md shadow-blue-300">
+      <i class="fas fa-arrow-up text-white text-xs"></i>
+      <span id="scroll-pct" class="text-white text-[9px] font-bold leading-none">0%</span>
+    </div>
+  </button>
+
+  <!-- ══════════════════════════════════════════
+       CROP MODAL
+       ══════════════════════════════════════════ -->
+  <div id="crop-modal" style="display:none" class="fixed inset-0 bg-black/75 z-[300] flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md flex flex-col" style="max-height:90vh">
+      <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100 flex-shrink-0">
+        <h3 class="font-bold text-gray-900"><i class="fas fa-crop-alt text-blue-600 mr-2"></i>Crop Profile Picture</h3>
+        <button onclick="closeCropModal()" class="w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-500 transition-colors">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="p-4 flex-1 overflow-hidden flex flex-col gap-4">
+        <div class="relative overflow-hidden rounded-xl bg-gray-100" style="height:260px">
+          <img id="crop-image" src="" alt="Crop" style="max-width:100%;display:block;">
+        </div>
+        <div class="flex items-center gap-4">
+          <span class="text-sm text-gray-500 font-medium flex-shrink-0">Preview:</span>
+          <div class="w-14 h-14 rounded-full overflow-hidden border-2 border-blue-300 flex-shrink-0">
+            <div class="cropper-preview w-full h-full overflow-hidden"></div>
+          </div>
+          <p class="text-xs text-gray-400 leading-relaxed">Drag to reposition · scroll to zoom. The result will be a circle.</p>
+        </div>
+      </div>
+      <div class="flex justify-end gap-3 px-6 py-4 border-t border-gray-100 flex-shrink-0">
+        <button onclick="closeCropModal()" class="px-4 py-2 rounded-xl border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-colors">Cancel</button>
+        <button onclick="applyCrop()" class="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold transition-colors flex items-center gap-2">
+          <i class="fas fa-check"></i> Use This Crop
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+  <script src="/assets/app.js"></script>
+  <script>
+    let userId = null;
+    let cropper = null;
+    let croppedDataURL = null;
+
+    /* ── Tab switching ── */
+    function switchTab(tab) {
+      ["profile", "security", "account"].forEach(t => {
+        const panel = document.getElementById("panel-" + t);
+        const btn   = document.getElementById("tab-" + t);
+        if (t === tab) {
+          panel.classList.remove("hidden");
+          panel.classList.remove("tab-enter");
+          void panel.offsetWidth;
+          panel.classList.add("tab-enter");
+          btn.classList.replace("text-gray-500", "text-blue-600");
+          btn.classList.replace("border-transparent", "border-blue-600");
+        } else {
+          panel.classList.add("hidden");
+          btn.classList.replace("text-blue-600", "text-gray-500");
+          btn.classList.replace("border-blue-600", "border-transparent");
+        }
+      });
+    }
+
+    /* ── Password toggles ── */
+    document.querySelectorAll(".toggle-pw-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const input = document.getElementById(btn.dataset.target);
+        const icon  = btn.querySelector("i");
+        if (input.type === "password") {
+          input.type = "text";
+          icon.classList.replace("fa-eye", "fa-eye-slash");
+        } else {
+          input.type = "password";
+          icon.classList.replace("fa-eye-slash", "fa-eye");
+        }
+      });
+    });
+
+    /* ── Strength live check ── */
+    document.getElementById("new-pw").addEventListener("input", () => {
+      const p = document.getElementById("new-pw").value;
+      const check = (id, pass) => {
+        const el   = document.getElementById(id);
+        const icon = el.querySelector("i");
+        if (pass) {
+          el.classList.replace("text-gray-400", "text-emerald-600");
+          icon.classList.replace("fa-circle", "fa-check-circle");
+        } else {
+          el.classList.replace("text-emerald-600", "text-gray-400");
+          icon.classList.replace("fa-check-circle", "fa-circle");
+        }
+      };
+      check("pw-rule-len",     p.length >= 8);
+      check("pw-rule-upper",   /[A-Z]/.test(p));
+      check("pw-rule-lower",   /[a-z]/.test(p));
+      check("pw-rule-num",     /[0-9]/.test(p));
+      check("pw-rule-special", /[^A-Za-z0-9]/.test(p));
+    });
+
+    /* ── Cropper: open on file select ── */
+    document.getElementById("avatar-input").addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      e.target.value = "";   // reset so same file can be re-selected
+
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const cropImg = document.getElementById("crop-image");
+        cropImg.src = ev.target.result;
+
+        document.getElementById("crop-modal").style.display = "flex";
+
+        if (cropper) { cropper.destroy(); cropper = null; }
+
+        cropper = new Cropper(cropImg, {
+          aspectRatio: 1,
+          viewMode: 1,
+          dragMode: "move",
+          autoCropArea: 0.85,
+          restore: false,
+          guides: true,
+          center: false,
+          highlight: false,
+          cropBoxMovable: false,
+          cropBoxResizable: false,
+          toggleDragModeOnDblclick: false,
+          preview: ".cropper-preview",
+        });
+      };
+      reader.readAsDataURL(file);
+    });
+
+    function closeCropModal() {
+      document.getElementById("crop-modal").style.display = "none";
+      if (cropper) { cropper.destroy(); cropper = null; }
+    }
+
+    function applyCrop() {
+      if (!cropper) return;
+      const canvas = cropper.getCroppedCanvas({ width: 256, height: 256 });
+      croppedDataURL = canvas.toDataURL("image/jpeg", 0.85);
+
+      // Update profile avatar preview (circular)
+      const img  = document.getElementById("avatar-img");
+      const icon = document.getElementById("avatar-icon");
+      img.src = croppedDataURL;
+      img.classList.remove("hidden");
+      icon.classList.add("hidden");
+
+      // Show "Update Picture" bar
+      document.getElementById("update-pic-wrap").classList.remove("hidden");
+
+      closeCropModal();
+    }
+
+    /* ── Upload cropped avatar ── */
+    document.getElementById("update-pic-btn").addEventListener("click", async () => {
+      if (!croppedDataURL) return;
+      const btn = document.getElementById("update-pic-btn");
+      btn.disabled = true;
+      btn.innerHTML = `<span class="spinner"></span> Uploading…`;
+
+      try {
+        const data = await api("PATCH", "/api/auth/profile", { avatar: croppedDataURL });
+        if (data.success) {
+          showToast("Profile picture updated!", "success");
+          croppedDataURL = null;
+          document.getElementById("update-pic-wrap").classList.add("hidden");
+
+          // Refresh header avatar from server
+          const src = `/api/auth/avatar/${userId}?t=${Date.now()}`;
+          const hImg  = document.getElementById("header-avatar");
+          const hIcon = document.getElementById("header-user-icon");
+          hImg.src = src;
+          hImg.classList.remove("hidden");
+          if (hIcon) hIcon.classList.add("hidden");
+          // Also refresh sidebar avatar
+          const sImg  = document.getElementById("sidebar-avatar");
+          const sIcon = document.getElementById("sidebar-user-icon");
+          if (sImg) { sImg.src = src; sImg.classList.remove("hidden"); }
+          if (sIcon) sIcon.classList.add("hidden");
+        } else {
+          showToast(data.message || "Upload failed", "error");
+        }
+      } catch { showToast("Network error. Please try again.", "error"); }
+
+      btn.disabled = false;
+      btn.innerHTML = `<i class="fas fa-cloud-upload-alt"></i> Update Picture`;
+    });
+
+    /* ── Phone validation ── */
+    function validatePhone(p) {
+      if (!p || p.trim() === "") return null;
+      if (!/^\d{8,15}$/.test(p.trim())) return "Enter 8–15 digits with country code, no spaces or symbols (e.g. 254712345678)";
+      return null;
+    }
+
+    /* ── Profile form (phone only) ── */
+    document.getElementById("profile-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      document.getElementById("phone-err").classList.add("hidden");
+
+      const phone = document.getElementById("phone-input").value.trim();
+      const phoneErr = validatePhone(phone);
+      if (phoneErr) {
+        const el = document.getElementById("phone-err");
+        el.textContent = phoneErr;
+        el.classList.remove("hidden");
+        return;
+      }
+
+      const btn = document.getElementById("save-btn");
+      btn.disabled = true;
+      btn.innerHTML = `<span class="spinner"></span> Saving…`;
+
+      try {
+        const data = await api("PATCH", "/api/auth/profile", { phone });
+        if (data.success) {
+          showToast("Profile updated successfully!", "success");
+          // Update account tab phone
+          document.getElementById("info-phone").textContent = phone || "Not set";
+        } else {
+          showToast(data.message, "error");
+        }
+      } catch { showToast("Network error. Please try again.", "error"); }
+
+      btn.disabled = false;
+      btn.innerHTML = `<i class="fas fa-save"></i> Save Changes`;
+    });
+
+    /* ── Password validation ── */
+    function validatePassword(p) {
+      if (!p)            return "Password is required";
+      if (p.length < 8)  return "Password must be at least 8 characters";
+      if (p.length > 128) return "Password is too long";
+      if (!/[A-Z]/.test(p)) return "Password must include at least one uppercase letter (A-Z)";
+      if (!/[a-z]/.test(p)) return "Password must include at least one lowercase letter (a-z)";
+      if (!/[0-9]/.test(p)) return "Password must include at least one number (0-9)";
+      if (!/[^A-Za-z0-9]/.test(p)) return "Password must include at least one special character";
+      return null;
+    }
+
+    /* ── Password change form ── */
+    document.getElementById("password-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const currentPassword  = document.getElementById("current-pw").value;
+      const newPassword      = document.getElementById("new-pw").value;
+      const confirmPassword  = document.getElementById("confirm-pw").value;
+
+      if (!currentPassword) { showToast("Current password is required", "error"); return; }
+      const pwErr = validatePassword(newPassword);
+      if (pwErr) { showToast(pwErr, "error"); return; }
+      if (newPassword !== confirmPassword) { showToast("New passwords do not match", "error"); return; }
+
+      const btn = document.getElementById("pw-btn");
+      btn.disabled = true;
+      btn.innerHTML = `<span class="spinner"></span> Updating…`;
+
+      try {
+        const data = await api("POST", "/api/auth/change-password", { currentPassword, newPassword, confirmPassword });
+        if (data.success) {
+          showToast(data.message + " Redirecting to login…", "success", 3000);
+          // Server already cleared the cookie — just redirect after a moment
+          setTimeout(() => { window.location.href = "/login"; }, 2500);
+        } else {
+          showToast(data.message, "error");
+          btn.disabled = false;
+          btn.innerHTML = `<i class="fas fa-key"></i> Update Password`;
+        }
+      } catch {
+        showToast("Network error. Please try again.", "error");
+        btn.disabled = false;
+        btn.innerHTML = `<i class="fas fa-key"></i> Update Password`;
+      }
+    });
+
+    /* ── Page init ── */
+    (async () => {
+      const user = await requireAuth();
+      if (!user) return;
+      userId = user._id;
+      populateHeader(user);
+
+      document.getElementById("disp-username").textContent  = user.username;
+      document.getElementById("disp-email").textContent     = user.email;
+      document.getElementById("username-input").value       = user.username;
+      document.getElementById("email-input").value          = user.email;
+      document.getElementById("phone-input").value          = user.phone || "";
+
+      // Account tab
+      document.getElementById("info-username").textContent = user.username;
+      document.getElementById("info-email").textContent    = user.email;
+      document.getElementById("info-phone").textContent    = user.phone || "Not set";
+      document.getElementById("info-joined").textContent   = fmtDate(user.createdAt);
+
+      const roleBadge = makeRoleBadge(user);
+      document.getElementById("disp-badge").innerHTML = roleBadge;
+      document.getElementById("info-role").innerHTML  = roleBadge;
+
+      // Load current avatar (circular preview)
+      if (user._id) {
+        const src   = `/api/auth/avatar/${user._id}`;
+        const probe = new Image();
+        probe.src = src;
+        probe.onload = () => {
+          const img  = document.getElementById("avatar-img");
+          const icon = document.getElementById("avatar-icon");
+          img.src = src;
+          img.classList.remove("hidden");
+          icon.classList.add("hidden");
+        };
+      }
+    })();
+  </script>
+</body>
+</html>

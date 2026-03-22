@@ -1,0 +1,102 @@
+/* ── Global ─────────────────────────────────── */
+html { scroll-behavior: smooth; overflow-x: hidden; }
+body { font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif; overflow-x: hidden; }
+*, *::before, *::after { box-sizing: border-box; }
+
+/* ── Toast: progress bar animation ── */
+@keyframes toastProg {
+  from { width: 100%; }
+  to   { width: 0%; }
+}
+
+/* ── Toast slide-in / slide-out ── */
+@keyframes toastIn {
+  from { transform: translateX(110%); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+@keyframes toastOut {
+  from { transform: translateX(0);    opacity: 1; }
+  to   { transform: translateX(110%); opacity: 0; }
+}
+
+/* ── Dropdown slide-in ── */
+@keyframes dropIn {
+  from { opacity: 0; transform: translateY(-6px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0)   scale(1);    }
+}
+#user-dropdown:not(.hidden) { animation: dropIn 0.15s ease; }
+
+/* ── Spinner ── */
+@keyframes spin { to { transform: rotate(360deg); } }
+.spinner {
+  display: inline-block; width: 18px; height: 18px;
+  border: 2px solid rgba(255,255,255,0.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  vertical-align: middle; margin-right: 6px;
+}
+
+/* ── Modal animation ── */
+@keyframes fadeUp {
+  from { transform: translateY(18px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+.modal-animate { animation: fadeUp 0.22s ease; }
+
+/* ── Hero gradient text ── */
+.gradient-text {
+  background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Feature card hover lift ── */
+.feature-card {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.feature-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 48px rgba(0,0,0,0.10);
+}
+
+/* ── Tab panel enter animation ── */
+@keyframes tabEnter {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.tab-enter { animation: tabEnter 0.22s cubic-bezier(0.16, 1, 0.3, 1); }
+
+/* ── Modal backdrop fade-in ── */
+@keyframes backdropIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.modal-backdrop-in { animation: backdropIn 0.2s ease; }
+
+/* ── Auth card entrance ── */
+@keyframes cardEnter {
+  from { opacity: 0; transform: translateY(24px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.card-enter { animation: cardEnter 0.4s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+/* ── Dashboard / Admin stagger-entry animation ── */
+@keyframes dashIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.dash-enter {
+  animation: dashIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* ── Custom scrollbar ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+/* ── Hide scrollbar while keeping scroll functionality ── */
+.no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }

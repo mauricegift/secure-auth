@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign Up — SecureAuth</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css" />
+  <link rel="stylesheet" href="/assets/style.css" />
+</head>
+<body class="min-h-screen flex flex-col bg-gray-50">
+
+  <!-- ── HEADER ── -->
+  <header class="fixed top-0 left-0 right-0 h-16 bg-white/80 backdrop-blur-md border-b border-gray-200/60 z-[60] flex items-center px-4 gap-3 shadow-sm rounded-b-2xl">
+    <button id="hamburger" class="md:hidden p-2 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-colors">
+      <i class="fas fa-bars text-lg"></i>
+    </button>
+    <a href="/" class="font-extrabold text-xl text-gray-900 tracking-tight flex items-center gap-2">
+      <div class="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
+        <i class="fas fa-lock text-white text-xs"></i>
+      </div>
+      Secure<span class="text-blue-600">Auth</span>
+    </a>
+    <div class="ml-auto hidden md:block">
+      <a href="/login" class="text-sm text-gray-500 hover:text-blue-600 transition-colors font-medium">Already have an account? <span class="text-blue-600 font-semibold hover:underline">Sign in</span></a>
+    </div>
+  </header>
+
+  <!-- ── SIDEBAR OVERLAY ── -->
+  <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-[50] hidden opacity-0 transition-opacity duration-300"></div>
+
+  <!-- ── SIDEBAR ── -->
+  <div id="sidebar" class="fixed top-0 left-0 right-0 z-[70] bg-white/90 backdrop-blur-md shadow-2xl -translate-y-full transition-transform duration-300 ease-out max-h-[85vh] overflow-y-auto rounded-b-3xl">
+    <div class="p-5">
+      <div class="flex items-center justify-between mb-6">
+        <a href="/" class="font-extrabold text-xl text-gray-900 tracking-tight flex items-center gap-2">
+          <div class="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
+            <i class="fas fa-lock text-white text-xs"></i>
+          </div>
+          Secure<span class="text-blue-600">Auth</span>
+        </a>
+        <button id="sidebar-close" class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+          <i class="fas fa-times text-gray-600 text-lg"></i>
+        </button>
+      </div>
+      <nav class="flex flex-col gap-1 mb-4">
+        <a href="/" class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-all font-medium"><i class="fas fa-home w-5 text-center"></i> Home</a>
+      </nav>
+      <div class="border-t border-gray-100 pt-4">
+        <div class="flex gap-3">
+          <a href="/login" class="flex-1 bg-blue-600 text-white text-center py-2.5 rounded-xl font-semibold text-sm hover:bg-blue-700 transition-colors">Login</a>
+          <a href="/signup" class="flex-1 border border-gray-200 text-gray-700 text-center py-2.5 rounded-xl font-semibold text-sm hover:bg-gray-50 transition-colors">Sign Up</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── MAIN ── -->
+  <main class="flex-1 flex items-center justify-center px-4 py-10 pt-24">
+    <div class="w-full max-w-md">
+      <div class="bg-white rounded-3xl shadow-2xl shadow-gray-200/80 ring-1 ring-gray-100 p-8 md:p-10 card-enter">
+
+        <div class="text-center mb-8" data-aos="fade-up" data-aos-delay="80">
+          <div class="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-blue-200">
+            <i class="fas fa-user-plus text-white text-xl"></i>
+          </div>
+          <h1 class="text-2xl font-black text-gray-900">Create your account</h1>
+          <p class="text-gray-500 text-sm mt-1">Get started with SecureAuth for free</p>
+        </div>
+
+        <form id="signup-form" class="space-y-4" novalidate>
+          <!-- Username -->
+          <div data-aos="fade-up" data-aos-delay="160">
+            <label for="username" class="block text-sm font-semibold text-gray-700 mb-1.5">Username</label>
+            <div class="relative">
+              <i class="fas fa-at absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+              <input type="text" id="username" name="username"
+                class="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-gray-50 focus:bg-white"
+                placeholder="johndoe" autocomplete="username" />
+            </div>
+            <p class="text-xs text-gray-400 mt-1.5"><i class="fas fa-info-circle mr-1"></i>Lowercase letters only (a–z), 3–30 characters</p>
+            <p class="field-error text-xs text-red-500 mt-1 hidden" id="username-err"></p>
+          </div>
+
+          <!-- Email -->
+          <div data-aos="fade-up" data-aos-delay="230">
+            <label for="email" class="block text-sm font-semibold text-gray-700 mb-1.5">Email address</label>
+            <div class="relative">
+              <i class="fas fa-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+              <input type="email" id="email" name="email"
+                class="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-gray-50 focus:bg-white"
+                placeholder="you@example.com" autocomplete="email" />
+            </div>
+            <p class="field-error text-xs text-red-500 mt-1 hidden" id="email-err"></p>
+          </div>
+
+          <!-- Password -->
+          <div data-aos="fade-up" data-aos-delay="300">
+            <label for="password" class="block text-sm font-semibold text-gray-700 mb-1.5">Password</label>
+            <div class="relative">
+              <i class="fas fa-key absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+              <input type="password" id="password" name="password"
+                class="w-full pl-10 pr-12 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-gray-50 focus:bg-white"
+                placeholder="Create a strong password" autocomplete="new-password" />
+              <button type="button" id="toggle-pw" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors">
+                <i class="fas fa-eye text-sm" id="pw-eye"></i>
+              </button>
+            </div>
+            <!-- Password strength checklist -->
+            <div class="mt-2.5 grid grid-cols-2 gap-x-3 gap-y-1" id="pw-rules">
+              <div class="rule flex items-center gap-1.5 text-xs text-gray-400" id="rule-len"><i class="fas fa-circle text-[7px]"></i> 8+ characters</div>
+              <div class="rule flex items-center gap-1.5 text-xs text-gray-400" id="rule-upper"><i class="fas fa-circle text-[7px]"></i> Uppercase (A-Z)</div>
+              <div class="rule flex items-center gap-1.5 text-xs text-gray-400" id="rule-lower"><i class="fas fa-circle text-[7px]"></i> Lowercase (a-z)</div>
+              <div class="rule flex items-center gap-1.5 text-xs text-gray-400" id="rule-num"><i class="fas fa-circle text-[7px]"></i> Number (0-9)</div>
+              <div class="rule flex items-center gap-1.5 text-xs text-gray-400 col-span-2" id="rule-special"><i class="fas fa-circle text-[7px]"></i> Special character (!@#$%...)</div>
+            </div>
+            <p class="field-error text-xs text-red-500 mt-1 hidden" id="password-err"></p>
+          </div>
+
+          <div data-aos="fade-up" data-aos-delay="370">
+            <button type="submit" id="submit-btn"
+              class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition-all hover:scale-[1.01] active:scale-[0.99] shadow-lg shadow-blue-200 flex items-center justify-center gap-2 mt-2">
+              <i class="fas fa-rocket"></i> Create Account
+            </button>
+          </div>
+        </form>
+
+        <p class="text-center text-sm text-gray-500 mt-6" data-aos="fade-up" data-aos-delay="440">
+          Already have an account? <a href="/login" class="text-blue-600 font-semibold hover:underline">Sign in</a>
+        </p>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- ── FOOTER ── -->
+  <footer class="bg-white border-t border-gray-100 text-gray-500 py-5 text-center text-sm rounded-t-2xl">
+    <p>© <span id="year"></span> SecureAuth. All rights reserved.</p>
+  </footer>
+
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script src="/assets/app.js"></script>
+  <script>
+    redirectIfLoggedIn("/");
+
+    function validateUsername(u) {
+      if (!u) return "Username is required";
+      if (!/^[a-z]{3,30}$/.test(u)) return "Username must be 3–30 lowercase letters only (no numbers, spaces, or symbols)";
+      return null;
+    }
+    function validateEmail(e) {
+      if (!e) return "Email is required";
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e)) return "Enter a valid email address (e.g. you@example.com)";
+      return null;
+    }
+    function validatePassword(p) {
+      if (!p) return "Password is required";
+      if (p.length < 8) return "Password must be at least 8 characters";
+      if (p.length > 128) return "Password is too long";
+      if (!/[A-Z]/.test(p)) return "Password must include at least one uppercase letter (A-Z)";
+      if (!/[a-z]/.test(p)) return "Password must include at least one lowercase letter (a-z)";
+      if (!/[0-9]/.test(p)) return "Password must include at least one number (0-9)";
+      if (!/[^A-Za-z0-9]/.test(p)) return "Password must include at least one special character (!@#$%^&*...)";
+      return null;
+    }
+
+    function showFieldError(id, msg) {
+      const el = document.getElementById(id);
+      el.textContent = msg;
+      el.classList.remove("hidden");
+    }
+    function clearFieldErrors() {
+      document.querySelectorAll(".field-error").forEach(el => el.classList.add("hidden"));
+    }
+
+    document.getElementById("password").addEventListener("input", () => {
+      const p = document.getElementById("password").value;
+      const check = (id, pass) => {
+        const el = document.getElementById(id);
+        const icon = el.querySelector("i");
+        if (pass) {
+          el.classList.replace("text-gray-400", "text-emerald-600");
+          icon.classList.replace("fa-circle", "fa-check-circle");
+        } else {
+          el.classList.replace("text-emerald-600", "text-gray-400");
+          icon.classList.replace("fa-check-circle", "fa-circle");
+        }
+      };
+      check("rule-len", p.length >= 8);
+      check("rule-upper", /[A-Z]/.test(p));
+      check("rule-lower", /[a-z]/.test(p));
+      check("rule-num", /[0-9]/.test(p));
+      check("rule-special", /[^A-Za-z0-9]/.test(p));
+    });
+
+    document.getElementById("toggle-pw").addEventListener("click", () => {
+      const pw = document.getElementById("password");
+      const eye = document.getElementById("pw-eye");
+      if (pw.type === "password") {
+        pw.type = "text";
+        eye.classList.replace("fa-eye", "fa-eye-slash");
+      } else {
+        pw.type = "password";
+        eye.classList.replace("fa-eye-slash", "fa-eye");
+      }
+    });
+
+    document.getElementById("signup-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      clearFieldErrors();
+
+      const username = document.getElementById("username").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+
+      let hasErr = false;
+      const uErr = validateUsername(username);
+      if (uErr) { showFieldError("username-err", uErr); hasErr = true; }
+      const eErr = validateEmail(email);
+      if (eErr) { showFieldError("email-err", eErr); hasErr = true; }
+      const pErr = validatePassword(password);
+      if (pErr) { showFieldError("password-err", pErr); hasErr = true; }
+      if (hasErr) return;
+
+      const btn = document.getElementById("submit-btn");
+      btn.disabled = true;
+      btn.innerHTML = `<span class="spinner"></span> Creating account…`;
+
+      try {
+        const data = await api("POST", "/api/auth/signup", { username, email, password });
+        if (data.success) {
+          showToast(data.message, "success");
+          setTimeout(() => { window.location.href = "/"; }, 800);
+        } else {
+          showToast(data.message, "error");
+          btn.disabled = false;
+          btn.innerHTML = `<i class="fas fa-rocket"></i> Create Account`;
+        }
+      } catch {
+        showToast("Network error. Please try again.", "error");
+        btn.disabled = false;
+        btn.innerHTML = `<i class="fas fa-rocket"></i> Create Account`;
+      }
+    });
+  </script>
+</body>
+</html>

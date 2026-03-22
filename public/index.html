@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SecureAuth — Modern Authentication Platform</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/assets/style.css" />
+</head>
+<body class="min-h-screen flex flex-col bg-white">
+
+  <!-- ── PAGE LOADER (prevents flash) ── -->
+  <div id="page-loader" class="fixed inset-0 bg-white flex items-center justify-center z-[500]">
+    <i class="fas fa-spinner fa-spin text-blue-500 text-3xl"></i>
+  </div>
+
+  <!-- ── HEADER ── -->
+  <header class="fixed top-0 left-0 right-0 h-16 bg-white/80 backdrop-blur-md border-b border-gray-200/60 z-[60] flex items-center px-4 gap-3 shadow-sm rounded-b-2xl">
+    <button id="hamburger" class="md:hidden p-2 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-colors">
+      <i class="fas fa-bars text-lg"></i>
+    </button>
+    <a href="/" class="font-extrabold text-xl text-gray-900 tracking-tight flex items-center gap-2">
+      <div class="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
+        <i class="fas fa-lock text-white text-xs"></i>
+      </div>
+      Secure<span class="text-blue-600">Auth</span>
+    </a>
+    <nav class="hidden md:flex items-center gap-1 ml-6">
+      <a href="/" class="nav-home nav-link px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all">Home</a>
+      <a href="/" class="nav-dashboard nav-link hidden px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all">Dashboard</a>
+      <a href="/admin" id="admin-nav-link" style="display:none" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all">Admin</a>
+    </nav>
+    <div class="ml-auto relative">
+      <button id="user-menu-btn" class="flex items-center gap-1.5 p-1.5 rounded-lg hover:bg-gray-100 transition-colors">
+        <div class="w-8 h-8 rounded-full overflow-hidden bg-blue-600 flex items-center justify-center">
+          <i class="fas fa-user text-white text-sm" id="header-user-icon"></i>
+          <img id="header-avatar" src="" alt="" class="w-full h-full object-cover hidden">
+        </div>
+        <i class="fas fa-chevron-down text-gray-400 text-xs hidden md:block"></i>
+      </button>
+      <div id="user-dropdown" class="hidden absolute right-0 top-12 w-52 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-[80]">
+        <div id="guest-links">
+          <a href="/login" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"><i class="fas fa-sign-in-alt text-gray-400 w-4 text-center"></i> Login</a>
+          <a href="/signup" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"><i class="fas fa-user-plus text-gray-400 w-4 text-center"></i> Register</a>
+        </div>
+        <div id="auth-links" class="hidden">
+          <div class="px-4 py-2.5 border-b border-gray-100">
+            <p class="text-xs text-gray-500">Signed in as</p>
+            <p class="text-sm font-semibold text-gray-900 truncate" id="header-username"></p>
+          </div>
+          <a href="/" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"><i class="fas fa-chart-bar text-gray-400 w-4 text-center"></i> Dashboard</a>
+          <a href="/profile" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"><i class="fas fa-user-circle text-gray-400 w-4 text-center"></i> Profile</a>
+          <a href="/admin" id="admin-dropdown-link" style="display:none" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"><i class="fas fa-shield-alt text-gray-400 w-4 text-center"></i> Admin Panel</a>
+          <div class="border-t border-gray-100 mt-1 pt-1">
+            <button id="logout-btn" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors"><i class="fas fa-sign-out-alt w-4 text-center"></i> Logout</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ── SIDEBAR OVERLAY ── -->
+  <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-[50] hidden opacity-0 transition-opacity duration-300"></div>
+
+  <!-- ── SIDEBAR (slides from top) ── -->
+  <div id="sidebar" class="fixed top-0 left-0 right-0 z-[70] bg-white/90 backdrop-blur-md shadow-2xl -translate-y-full transition-transform duration-300 ease-out max-h-[85vh] overflow-y-auto rounded-b-3xl">
+    <div class="p-5">
+      <div class="flex items-center justify-between mb-6">
+        <a href="/" class="font-extrabold text-xl text-gray-900 tracking-tight flex items-center gap-2">
+            <div class="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
+              <i class="fas fa-lock text-white text-xs"></i>
+            </div>
+            Secure<span class="text-blue-600">Auth</span>
+          </a>
+        <button id="sidebar-close" class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+          <i class="fas fa-times text-gray-600 text-lg"></i>
+        </button>
+      </div>
+      <nav class="flex flex-col gap-1 mb-4">
+        <a href="/" class="nav-home nav-link flex items-center gap-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-all font-medium"><i class="fas fa-home w-5 text-center"></i> Home</a>
+        <a href="/" class="nav-dashboard nav-link hidden flex items-center gap-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-all font-medium"><i class="fas fa-chart-bar w-5 text-center"></i> Dashboard</a>
+        <a href="/profile" id="sidebar-profile-link" style="display:none" class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-all font-medium"><i class="fas fa-user w-5 text-center"></i> Profile</a>
+        <a href="/admin" id="sidebar-admin-link" style="display:none" class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-all font-medium"><i class="fas fa-shield-alt w-5 text-center"></i> Admin</a>
+      </nav>
+      <div class="border-t border-gray-100 pt-4">
+        <div id="sidebar-guest" class="flex gap-3">
+          <a href="/login" class="flex-1 bg-blue-600 text-white text-center py-2.5 rounded-xl font-semibold text-sm hover:bg-blue-700 transition-colors">Login</a>
+          <a href="/signup" class="flex-1 border border-gray-200 text-gray-700 text-center py-2.5 rounded-xl font-semibold text-sm hover:bg-gray-50 transition-colors">Sign Up</a>
+        </div>
+        <div id="sidebar-user" class="hidden">
+          <div class="flex items-center gap-3 bg-gray-50 rounded-xl p-3 mb-3">
+            <div class="w-10 h-10 rounded-full overflow-hidden bg-blue-600 flex items-center justify-center flex-shrink-0">
+              <i class="fas fa-user text-white text-sm" id="sidebar-user-icon"></i>
+              <img id="sidebar-avatar" src="" alt="" class="w-full h-full object-cover hidden">
+            </div>
+            <div class="min-w-0">
+              <div class="font-semibold text-sm text-gray-900 truncate" id="sidebar-username"></div>
+              <div class="text-xs text-gray-500 truncate" id="sidebar-email"></div>
+            </div>
+          </div>
+          <button id="sidebar-logout" class="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-red-50 text-red-600 font-semibold text-sm hover:bg-red-100 transition-colors">
+            <i class="fas fa-sign-out-alt"></i> Logout
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       LANDING VIEW  (shown when not logged in)
+       ══════════════════════════════════════════ -->
+  <div id="landing-view" class="flex-1 flex flex-col hidden">
+    <main class="flex-1 pt-16">
+
+      <!-- HERO -->
+      <section class="flex items-center bg-white border-b border-gray-100">
+        <div class="max-w-5xl mx-auto px-6 py-14 md:py-20 text-center">
+          <h1 class="text-5xl md:text-7xl font-black leading-tight mb-6 text-gray-900">
+            <span data-aos="fade-up" data-aos-delay="0" class="inline-block">Secure Auth</span><br>
+            <span data-aos="fade-up" data-aos-delay="150" class="inline-block text-blue-600">Made Simple</span>
+          </h1>
+          <p data-aos="fade-up" data-aos-delay="300" class="text-lg md:text-xl text-gray-500 max-w-2xl mx-auto mb-10 leading-relaxed">
+            A full-stack authentication platform with JWT sessions, bcrypt hashing, role-based access control, and a beautiful modern UI.
+          </p>
+          <div data-aos="fade-up" data-aos-delay="450" class="flex items-center justify-center gap-3">
+            <a href="/signup" class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold px-5 sm:px-8 py-3.5 rounded-xl transition-all hover:scale-105 shadow-lg shadow-blue-200 whitespace-nowrap">
+              <i class="fas fa-rocket"></i> Get Started
+            </a>
+            <a href="/login" class="inline-flex items-center gap-2 border border-gray-200 text-gray-700 font-semibold px-5 sm:px-8 py-3.5 rounded-xl transition-all hover:scale-105 hover:bg-gray-50 hover:border-blue-200 hover:text-blue-600 whitespace-nowrap">
+              <i class="fas fa-sign-in-alt"></i> Sign In
+            </a>
+          </div>
+          <div data-aos="fade-up" data-aos-delay="600" class="mt-14 flex flex-wrap justify-center gap-3 sm:gap-6 text-sm text-gray-500">
+            <span class="flex items-center gap-2"><i class="fas fa-check-circle text-blue-500"></i> httpOnly JWT Cookies</span>
+            <span class="flex items-center gap-2"><i class="fas fa-check-circle text-blue-500"></i> bcrypt Password Hashing</span>
+            <span class="flex items-center gap-2"><i class="fas fa-check-circle text-blue-500"></i> Role-Based Access Control</span>
+            <span class="flex items-center gap-2"><i class="fas fa-check-circle text-blue-500"></i> Auto Token Refresh</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- FEATURES -->
+      <section class="py-24 bg-white">
+        <div class="max-w-6xl mx-auto px-6">
+          <div class="text-center mb-16" data-aos="fade-up">
+            <p class="text-blue-600 font-semibold text-sm uppercase tracking-widest mb-3">Why SecureAuth</p>
+            <h2 class="text-4xl md:text-5xl font-black text-gray-900">Everything you need</h2>
+            <p class="mt-4 text-gray-500 text-lg max-w-xl mx-auto">Built with security best-practices, developer ergonomics, and a polished end-user experience in mind.</p>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="feature-card bg-gradient-to-br from-blue-50 to-blue-100/50 rounded-2xl p-7 border border-blue-100" data-aos="fade-up" data-aos-delay="0">
+              <div class="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center mb-5"><i class="fas fa-key text-white text-xl"></i></div>
+              <h3 class="font-bold text-xl text-gray-900 mb-2">JWT Authentication</h3>
+              <p class="text-gray-600 leading-relaxed">Secure httpOnly cookies with auto-refresh every 14 minutes. Tokens are verified server-side on every request.</p>
+            </div>
+            <div class="feature-card bg-gradient-to-br from-violet-50 to-violet-100/50 rounded-2xl p-7 border border-violet-100" data-aos="fade-up" data-aos-delay="100">
+              <div class="w-12 h-12 bg-violet-600 rounded-xl flex items-center justify-center mb-5"><i class="fas fa-lock text-white text-xl"></i></div>
+              <h3 class="font-bold text-xl text-gray-900 mb-2">bcrypt Hashing</h3>
+              <p class="text-gray-600 leading-relaxed">Passwords are hashed with 12 salt rounds using bcryptjs. Plain-text passwords are never stored or transmitted.</p>
+            </div>
+            <div class="feature-card bg-gradient-to-br from-emerald-50 to-emerald-100/50 rounded-2xl p-7 border border-emerald-100" data-aos="fade-up" data-aos-delay="200">
+              <div class="w-12 h-12 bg-emerald-600 rounded-xl flex items-center justify-center mb-5"><i class="fas fa-shield-alt text-white text-xl"></i></div>
+              <h3 class="font-bold text-xl text-gray-900 mb-2">Role-Based Access</h3>
+              <p class="text-gray-600 leading-relaxed">User and Admin roles enforced both server-side and client-side. Admins get a full management dashboard.</p>
+            </div>
+            <div class="feature-card bg-gradient-to-br from-orange-50 to-orange-100/50 rounded-2xl p-7 border border-orange-100" data-aos="fade-up" data-aos-delay="0">
+              <div class="w-12 h-12 bg-orange-500 rounded-xl flex items-center justify-center mb-5"><i class="fas fa-user-circle text-white text-xl"></i></div>
+              <h3 class="font-bold text-xl text-gray-900 mb-2">Avatar Uploads</h3>
+              <p class="text-gray-600 leading-relaxed">Profile pictures with circular crop tool, stored securely in MongoDB. Real-time preview before saving.</p>
+            </div>
+            <div class="feature-card bg-gradient-to-br from-pink-50 to-pink-100/50 rounded-2xl p-7 border border-pink-100" data-aos="fade-up" data-aos-delay="100">
+              <div class="w-12 h-12 bg-pink-600 rounded-xl flex items-center justify-center mb-5"><i class="fas fa-database text-white text-xl"></i></div>
+              <h3 class="font-bold text-xl text-gray-900 mb-2">MongoDB Backend</h3>
+              <p class="text-gray-600 leading-relaxed">Mongoose ODM with a full User model supporting username, email, phone, role, disabled status, and avatars.</p>
+            </div>
+            <div class="feature-card bg-gradient-to-br from-slate-50 to-slate-100/50 rounded-2xl p-7 border border-slate-100" data-aos="fade-up" data-aos-delay="200">
+              <div class="w-12 h-12 bg-slate-700 rounded-xl flex items-center justify-center mb-5"><i class="fas fa-mobile-alt text-white text-xl"></i></div>
+              <h3 class="font-bold text-xl text-gray-900 mb-2">Responsive Design</h3>
+              <p class="text-gray-600 leading-relaxed">Tailwind CSS with a smooth slide-from-top sidebar menu, toast notifications, and AOS scroll animations.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- HOW IT WORKS -->
+      <section class="py-24 bg-gray-50">
+        <div class="max-w-4xl mx-auto px-6">
+          <div class="text-center mb-16" data-aos="fade-up">
+            <p class="text-blue-600 font-semibold text-sm uppercase tracking-widest mb-3">Simple Process</p>
+            <h2 class="text-4xl md:text-5xl font-black text-gray-900">How it works</h2>
+          </div>
+          <div class="space-y-8">
+            <div class="flex gap-6 items-start" data-aos="fade-up" data-aos-delay="0">
+              <div class="w-14 h-14 bg-blue-600 text-white rounded-2xl flex items-center justify-center text-xl font-black flex-shrink-0 shadow-lg shadow-blue-200">1</div>
+              <div class="pt-1">
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Create your account</h3>
+                <p class="text-gray-600 leading-relaxed">Sign up with a username, email, and password. Your password is immediately hashed with bcrypt before being stored.</p>
+              </div>
+            </div>
+            <div class="flex gap-6 items-start" data-aos="fade-up" data-aos-delay="100">
+              <div class="w-14 h-14 bg-violet-600 text-white rounded-2xl flex items-center justify-center text-xl font-black flex-shrink-0 shadow-lg shadow-violet-200">2</div>
+              <div class="pt-1">
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Authenticate securely</h3>
+                <p class="text-gray-600 leading-relaxed">Log in to receive a signed JWT stored in an httpOnly cookie — invisible to JavaScript, safe from XSS attacks.</p>
+              </div>
+            </div>
+            <div class="flex gap-6 items-start" data-aos="fade-up" data-aos-delay="200">
+              <div class="w-14 h-14 bg-emerald-600 text-white rounded-2xl flex items-center justify-center text-xl font-black flex-shrink-0 shadow-lg shadow-emerald-200">3</div>
+              <div class="pt-1">
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Access your dashboard</h3>
+                <p class="text-gray-600 leading-relaxed">View your account info, update your profile, upload a photo, and manage your password from a clean dashboard.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- CTA -->
+      <section class="py-24 bg-white border-t border-gray-100">
+        <div class="max-w-3xl mx-auto px-6 text-center" data-aos="fade-up">
+          <div class="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <i class="fas fa-lock text-blue-600 text-2xl"></i>
+          </div>
+          <h2 class="text-4xl md:text-5xl font-black mb-6 text-gray-900">Ready to get started?</h2>
+          <p class="text-gray-500 text-lg mb-10 max-w-xl mx-auto">Create your free account in seconds and explore all the features SecureAuth has to offer.</p>
+          <div class="flex items-center justify-center gap-3">
+            <a href="/signup" class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold px-5 sm:px-8 py-3.5 rounded-xl transition-all hover:scale-105 shadow-lg shadow-blue-200 whitespace-nowrap">
+              <i class="fas fa-rocket"></i> Get Started
+            </a>
+            <a href="/login" class="inline-flex items-center gap-2 border border-gray-200 text-gray-700 font-semibold px-5 sm:px-8 py-3.5 rounded-xl hover:bg-gray-50 hover:border-blue-200 hover:text-blue-600 transition-all hover:scale-105 whitespace-nowrap">
+              <i class="fas fa-sign-in-alt"></i> Sign In
+            </a>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       DASHBOARD VIEW  (shown when logged in)
+       ══════════════════════════════════════════ -->
+  <div id="dashboard-view" class="hidden flex-1 bg-gray-50 pt-16">
+    <div class="max-w-5xl mx-auto px-4 py-8">
+
+      <!-- Welcome banner -->
+      <div data-dash-delay="0" class="rounded-2xl bg-white border border-gray-100 shadow-sm p-7 mb-8 relative overflow-hidden">
+        <!-- Subtle dot-grid decoration -->
+        <div class="absolute top-0 right-0 w-64 h-full opacity-[0.035] pointer-events-none"
+             style="background-image:radial-gradient(circle,#3b82f6 1.5px,transparent 1.5px);background-size:20px 20px"></div>
+        <!-- Soft glow blob -->
+        <div class="absolute -right-8 -top-8 w-44 h-44 rounded-full opacity-10 blur-3xl pointer-events-none bg-gradient-to-br from-blue-400 to-violet-500"></div>
+        <!-- Left accent bar -->
+        <div class="absolute left-0 top-5 bottom-5 w-[3px] rounded-full bg-gradient-to-b from-blue-500 to-violet-500"></div>
+        <div class="relative pl-5">
+          <div class="inline-flex items-center gap-1.5 bg-blue-50 text-blue-600 text-xs font-bold px-2.5 py-1 rounded-full mb-3 border border-blue-100">
+            <i class="fas fa-sun text-xs"></i> Welcome back
+          </div>
+          <h1 class="text-2xl md:text-3xl font-black text-gray-900 mb-1">Hello, <span id="welcome-name" class="text-blue-600">…</span> 👋</h1>
+          <p class="text-gray-500 text-sm">Here's what's going on with your account today.</p>
+        </div>
+      </div>
+
+      <!-- Stats grid -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-8">
+        <div data-dash-delay="80" class="bg-white rounded-2xl p-3 sm:p-5 border border-gray-100 shadow-sm flex items-center gap-2 sm:gap-4">
+          <div class="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
+            <i class="fas fa-user-tag text-blue-600 sm:text-lg text-base"></i>
+          </div>
+          <div class="min-w-0">
+            <div class="leading-tight" id="stat-role">—</div>
+            <div class="text-xs text-gray-500 font-medium mt-0.5">Account Role</div>
+          </div>
+        </div>
+        <div data-dash-delay="140" class="bg-white rounded-2xl p-3 sm:p-5 border border-gray-100 shadow-sm flex items-center gap-2 sm:gap-4">
+          <div class="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-emerald-50 flex items-center justify-center flex-shrink-0">
+            <i class="fas fa-envelope text-emerald-600 sm:text-lg text-base"></i>
+          </div>
+          <div class="min-w-0">
+            <div class="font-extrabold text-sm text-gray-900 leading-tight truncate" id="stat-email">—</div>
+            <div class="text-xs text-gray-500 font-medium mt-0.5">Email</div>
+          </div>
+        </div>
+        <div data-dash-delay="200" class="bg-white rounded-2xl p-3 sm:p-5 border border-gray-100 shadow-sm flex items-center gap-2 sm:gap-4">
+          <div class="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-amber-50 flex items-center justify-center flex-shrink-0">
+            <i class="fas fa-phone text-amber-600 sm:text-lg text-base"></i>
+          </div>
+          <div class="min-w-0">
+            <div class="font-extrabold text-sm text-gray-900 leading-tight truncate" id="stat-phone">—</div>
+            <div class="text-xs text-gray-500 font-medium mt-0.5">Phone</div>
+          </div>
+        </div>
+        <div data-dash-delay="260" class="bg-white rounded-2xl p-3 sm:p-5 border border-gray-100 shadow-sm flex items-center gap-2 sm:gap-4">
+          <div class="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-rose-50 flex items-center justify-center flex-shrink-0">
+            <i class="fas fa-calendar-alt text-rose-600 sm:text-lg text-base"></i>
+          </div>
+          <div class="min-w-0">
+            <div class="font-extrabold text-sm text-gray-900 leading-tight" id="stat-joined">—</div>
+            <div class="text-xs text-gray-500 font-medium mt-0.5">Member Since</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Account overview -->
+      <div data-dash-delay="340" class="bg-white rounded-2xl border border-gray-100 shadow-sm">
+        <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+          <h2 class="font-bold text-gray-900"><i class="fas fa-id-card text-blue-600 mr-2"></i>Account Overview</h2>
+          <a href="/profile" class="text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors">Edit Profile <i class="fas fa-arrow-right text-xs"></i></a>
+        </div>
+        <div class="p-6 flex items-center gap-5 flex-wrap">
+          <div class="w-16 h-16 rounded-full overflow-hidden bg-blue-600 flex items-center justify-center flex-shrink-0">
+            <i class="fas fa-user text-white text-2xl" id="overview-icon"></i>
+            <img id="overview-avatar" src="" alt="" class="w-full h-full object-cover hidden">
+          </div>
+          <div>
+            <div class="text-xl font-black text-gray-900" id="overview-name">—</div>
+            <div class="text-sm text-gray-500 mt-0.5" id="overview-email">—</div>
+            <div class="mt-2" id="overview-badge"></div>
+          </div>
+          <div class="ml-auto hidden md:flex items-center gap-3">
+            <a href="/profile" class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2 rounded-xl transition-colors">
+              <i class="fas fa-pen"></i> Edit Profile
+            </a>
+            <a href="/admin" id="admin-panel-btn" style="display:none" class="inline-flex items-center gap-2 bg-slate-700 hover:bg-slate-800 text-white text-sm font-semibold px-4 py-2 rounded-xl transition-colors">
+              <i class="fas fa-shield-alt"></i> Admin Panel
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick links -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
+        <a data-dash-delay="420" href="/profile" class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex items-center gap-4 hover:border-blue-200 hover:shadow-md transition-all group">
+          <div class="w-11 h-11 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0 group-hover:bg-blue-100 transition-colors">
+            <i class="fas fa-user-edit text-blue-600 text-lg"></i>
+          </div>
+          <div>
+            <div class="font-semibold text-gray-900 text-sm">Edit Profile</div>
+            <div class="text-xs text-gray-500 mt-0.5">Update your info</div>
+          </div>
+        </a>
+        <a data-dash-delay="480" href="/profile" class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex items-center gap-4 hover:border-violet-200 hover:shadow-md transition-all group">
+          <div class="w-11 h-11 rounded-xl bg-violet-50 flex items-center justify-center flex-shrink-0 group-hover:bg-violet-100 transition-colors">
+            <i class="fas fa-lock text-violet-600 text-lg"></i>
+          </div>
+          <div>
+            <div class="font-semibold text-gray-900 text-sm">Security</div>
+            <div class="text-xs text-gray-500 mt-0.5">Change password</div>
+          </div>
+        </a>
+        <a data-dash-delay="540" href="/admin" id="dash-admin-link" style="display:none" class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex items-center gap-4 hover:border-emerald-200 hover:shadow-md transition-all group">
+          <div class="w-11 h-11 rounded-xl bg-emerald-50 flex items-center justify-center flex-shrink-0 group-hover:bg-emerald-100 transition-colors">
+            <i class="fas fa-shield-halved text-emerald-600 text-lg"></i>
+          </div>
+          <div>
+            <div class="font-semibold text-gray-900 text-sm">Admin Panel</div>
+            <div class="text-xs text-gray-500 mt-0.5">Manage users</div>
+          </div>
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── FOOTER ── -->
+  <footer class="bg-gray-50 border-t border-gray-100 text-gray-500 py-5 text-center text-sm rounded-t-2xl">
+    <p>© <span id="year"></span> SecureAuth. All rights reserved.</p>
+  </footer>
+
+  <!-- ── SCROLL-TO-TOP BUTTON ── -->
+  <button id="scroll-top-btn"
+    onclick="window.scrollTo({top:0,behavior:'smooth'})"
+    title="Back to top"
+    class="fixed bottom-6 right-6 z-[90] group w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 opacity-0 pointer-events-none translate-y-4">
+    <!-- Circular SVG progress ring -->
+    <svg class="absolute inset-0 w-14 h-14 -rotate-90" viewBox="0 0 56 56" aria-hidden="true">
+      <circle cx="28" cy="28" r="24" fill="none" stroke="#dbeafe" stroke-width="3"/>
+      <circle id="scroll-ring" cx="28" cy="28" r="24" fill="none" stroke="#2563eb" stroke-width="3"
+        stroke-dasharray="150.8" stroke-dashoffset="150.8" stroke-linecap="round"
+        style="transition: stroke-dashoffset 0.15s ease"/>
+    </svg>
+    <!-- Inner blue circle -->
+    <div class="relative w-10 h-10 bg-blue-600 group-hover:bg-blue-700 rounded-full flex flex-col items-center justify-center gap-0.5 transition-colors shadow-md shadow-blue-300">
+      <i class="fas fa-arrow-up text-white text-xs"></i>
+      <span id="scroll-pct" class="text-white text-[9px] font-bold leading-none">0%</span>
+    </div>
+  </button>
+
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script src="/assets/app.js"></script>
+  <script>
+    (async () => {
+      const user = await checkAuthStatus();
+      const loader = document.getElementById("page-loader");
+
+      if (user) {
+        document.getElementById("landing-view").classList.add("hidden");
+        const dash = document.getElementById("dashboard-view");
+        dash.classList.remove("hidden");
+        document.body.classList.replace("bg-white", "bg-gray-50");
+        document.title = "Dashboard — SecureAuth";
+
+        populateHeader(user);
+
+        document.getElementById("welcome-name").textContent = user.username;
+        document.getElementById("stat-role").innerHTML = makeRoleBadge(user);
+        document.getElementById("stat-email").textContent = user.email;
+        document.getElementById("stat-phone").textContent = user.phone || "Not set";
+        document.getElementById("stat-joined").textContent = fmtDate(user.createdAt);
+        document.getElementById("overview-name").textContent = user.username;
+        document.getElementById("overview-email").textContent = user.email;
+
+        document.getElementById("overview-badge").innerHTML = makeRoleBadge(user);
+        if (user.role === "admin") {
+          const apBtn = document.getElementById("admin-panel-btn");
+          if (apBtn) apBtn.style.display = "inline-flex";
+          const dashAdmin = document.getElementById("dash-admin-link");
+          if (dashAdmin) dashAdmin.style.display = "flex";
+        }
+
+        loadAvatar(
+          user._id,
+          document.getElementById("overview-avatar"),
+          document.getElementById("overview-icon")
+        );
+
+        animateDashboardIn();
+      } else {
+        document.getElementById("landing-view").classList.remove("hidden");
+        document.title = "SecureAuth — Modern Authentication Platform";
+      }
+
+      loader.style.transition = "opacity 0.2s";
+      // AOS scanned while views were hidden — refresh now that content is visible
+      requestAnimationFrame(() => { if (typeof AOS !== "undefined") AOS.refresh(); });
+      loader.style.opacity = "0";
+      setTimeout(() => loader.remove(), 200);
+    })();
+
+  </script>
+</body>
+</html>

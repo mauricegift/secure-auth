@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login — SecureAuth</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css" />
+  <link rel="stylesheet" href="/assets/style.css" />
+</head>
+<body class="min-h-screen flex flex-col bg-gray-50">
+
+  <!-- ── HEADER ── -->
+  <header class="fixed top-0 left-0 right-0 h-16 bg-white/80 backdrop-blur-md border-b border-gray-200/60 z-[60] flex items-center px-4 gap-3 shadow-sm rounded-b-2xl">
+    <button id="hamburger" class="md:hidden p-2 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-colors">
+      <i class="fas fa-bars text-lg"></i>
+    </button>
+    <a href="/" class="font-extrabold text-xl text-gray-900 tracking-tight flex items-center gap-2">
+      <div class="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
+        <i class="fas fa-lock text-white text-xs"></i>
+      </div>
+      Secure<span class="text-blue-600">Auth</span>
+    </a>
+    <div class="ml-auto hidden md:block">
+      <a href="/signup" class="text-sm text-gray-500 hover:text-blue-600 transition-colors font-medium">Don't have an account? <span class="text-blue-600 font-semibold hover:underline">Sign up</span></a>
+    </div>
+  </header>
+
+  <!-- ── SIDEBAR OVERLAY ── -->
+  <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-[50] hidden opacity-0 transition-opacity duration-300"></div>
+
+  <!-- ── SIDEBAR ── -->
+  <div id="sidebar" class="fixed top-0 left-0 right-0 z-[70] bg-white/90 backdrop-blur-md shadow-2xl -translate-y-full transition-transform duration-300 ease-out max-h-[85vh] overflow-y-auto rounded-b-3xl">
+    <div class="p-5">
+      <div class="flex items-center justify-between mb-6">
+        <a href="/" class="font-extrabold text-xl text-gray-900 tracking-tight flex items-center gap-2">
+          <div class="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
+            <i class="fas fa-lock text-white text-xs"></i>
+          </div>
+          Secure<span class="text-blue-600">Auth</span>
+        </a>
+        <button id="sidebar-close" class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+          <i class="fas fa-times text-gray-600 text-lg"></i>
+        </button>
+      </div>
+      <nav class="flex flex-col gap-1 mb-4">
+        <a href="/" class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-all font-medium"><i class="fas fa-home w-5 text-center"></i> Home</a>
+      </nav>
+      <div class="border-t border-gray-100 pt-4">
+        <div class="flex gap-3">
+          <a href="/login" class="flex-1 bg-blue-600 text-white text-center py-2.5 rounded-xl font-semibold text-sm hover:bg-blue-700 transition-colors">Login</a>
+          <a href="/signup" class="flex-1 border border-gray-200 text-gray-700 text-center py-2.5 rounded-xl font-semibold text-sm hover:bg-gray-50 transition-colors">Sign Up</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── MAIN ── -->
+  <main class="flex-1 flex items-center justify-center px-4 py-10 pt-24">
+    <div class="w-full max-w-md">
+      <div class="bg-white rounded-3xl shadow-2xl shadow-gray-200/80 ring-1 ring-gray-100 p-8 md:p-10 card-enter">
+
+        <div class="text-center mb-8" data-aos="fade-up" data-aos-delay="80">
+          <div class="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-blue-200">
+            <i class="fas fa-lock text-white text-xl"></i>
+          </div>
+          <h1 class="text-2xl font-black text-gray-900">Welcome back</h1>
+          <p class="text-gray-500 text-sm mt-1">Sign in to your SecureAuth account</p>
+        </div>
+
+        <form id="login-form" class="space-y-4" novalidate>
+          <div data-aos="fade-up" data-aos-delay="180">
+            <label for="identifier" class="block text-sm font-semibold text-gray-700 mb-1.5">Username or email</label>
+            <div class="relative">
+              <i class="fas fa-user absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+              <input type="text" id="identifier" name="identifier"
+                class="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-gray-50 focus:bg-white"
+                placeholder="johndoe or you@example.com" autocomplete="username" />
+            </div>
+            <p class="field-error text-xs text-red-500 mt-1 hidden" id="identifier-err"></p>
+          </div>
+          <div data-aos="fade-up" data-aos-delay="250">
+            <label for="password" class="block text-sm font-semibold text-gray-700 mb-1.5">Password</label>
+            <div class="relative">
+              <i class="fas fa-key absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+              <input type="password" id="password" name="password"
+                class="w-full pl-10 pr-12 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-gray-50 focus:bg-white"
+                placeholder="••••••••" autocomplete="current-password" />
+              <button type="button" id="toggle-pw" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors">
+                <i class="fas fa-eye text-sm" id="pw-eye"></i>
+              </button>
+            </div>
+            <p class="field-error text-xs text-red-500 mt-1 hidden" id="password-err"></p>
+          </div>
+
+          <div data-aos="fade-up" data-aos-delay="320">
+            <button type="submit" id="submit-btn"
+              class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition-all hover:scale-[1.01] active:scale-[0.99] shadow-lg shadow-blue-200 flex items-center justify-center gap-2 mt-2">
+              <i class="fas fa-sign-in-alt"></i> Sign In
+            </button>
+          </div>
+        </form>
+
+        <p class="text-center text-sm text-gray-500 mt-6" data-aos="fade-up" data-aos-delay="390">
+          Don't have an account? <a href="/signup" class="text-blue-600 font-semibold hover:underline">Sign up free</a>
+        </p>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- ── FOOTER ── -->
+  <footer class="bg-white border-t border-gray-100 text-gray-500 py-5 text-center text-sm rounded-t-2xl">
+    <p>© <span id="year"></span> SecureAuth. All rights reserved.</p>
+  </footer>
+
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script src="/assets/app.js"></script>
+  <script>
+    redirectIfLoggedIn("/");
+
+    function showFieldError(id, msg) {
+      const el = document.getElementById(id);
+      el.textContent = msg;
+      el.classList.remove("hidden");
+    }
+    function clearFieldErrors() {
+      document.querySelectorAll(".field-error").forEach(el => el.classList.add("hidden"));
+    }
+
+    document.getElementById("toggle-pw").addEventListener("click", () => {
+      const pw = document.getElementById("password");
+      const eye = document.getElementById("pw-eye");
+      if (pw.type === "password") {
+        pw.type = "text";
+        eye.classList.replace("fa-eye", "fa-eye-slash");
+      } else {
+        pw.type = "password";
+        eye.classList.replace("fa-eye-slash", "fa-eye");
+      }
+    });
+
+    document.getElementById("login-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      clearFieldErrors();
+
+      const identifier = document.getElementById("identifier").value.trim();
+      const password = document.getElementById("password").value;
+
+      let hasErr = false;
+      if (!identifier) { showFieldError("identifier-err", "Username or email is required"); hasErr = true; }
+      if (!password) { showFieldError("password-err", "Password is required"); hasErr = true; }
+      if (hasErr) return;
+
+      const btn = document.getElementById("submit-btn");
+      btn.disabled = true;
+      btn.innerHTML = `<span class="spinner"></span> Signing in…`;
+
+      try {
+        const data = await api("POST", "/api/auth/login", { identifier, password });
+        if (data.success) {
+          showToast(data.message, "success");
+          setTimeout(() => { window.location.href = "/"; }, 800);
+        } else {
+          showToast(data.message, "error");
+          btn.disabled = false;
+          btn.innerHTML = `<i class="fas fa-sign-in-alt"></i> Sign In`;
+        }
+      } catch {
+        showToast("Network error. Please try again.", "error");
+        btn.disabled = false;
+        btn.innerHTML = `<i class="fas fa-sign-in-alt"></i> Sign In`;
+      }
+    });
+  </script>
+</body>
+</html>

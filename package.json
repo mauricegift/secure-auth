@@ -1,0 +1,21 @@
+{
+  "name": "secure-auth",
+  "version": "1.0.0",
+  "description": "Full-stack Node.js authentication platform with JWT sessions, bcrypt, role-based access control, and profile management",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "GiftedTech",
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^16.4.5",
+    "express": "^4.22.1",
+    "express-rate-limit": "^8.3.1",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.3.1",
+    "multer": "^2.1.1"
+  }
+}
