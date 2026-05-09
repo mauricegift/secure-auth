@@ -2,7 +2,7 @@
 
 > A full-stack Node.js authentication platform with MongoDB, JWT sessions, bcrypt hashing, role-based access control, platform owner protection, avatar uploads, and a polished responsive UI.
 
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-secureauth.giftedtech.co.ke-blue?style=flat-square)](https://secureauth.giftedtech.co.ke)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-secureauth.gifted.co.ke-blue?style=flat-square)](https://secureauth.gifted.co.ke)
 [![GitHub](https://img.shields.io/badge/GitHub-mauricegift%2Fsecure--auth-181717?style=flat-square&logo=github)](https://github.com/mauricegift/secure-auth)
 [![Node.js](https://img.shields.io/badge/Node.js-18%2B-339933?style=flat-square&logo=node.js)](https://nodejs.org)
 [![MongoDB](https://img.shields.io/badge/MongoDB-6%2B-47A248?style=flat-square&logo=mongodb)](https://mongodb.com)
@@ -11,7 +11,7 @@
 
 ## Live Demo
 
-**[https://secureauth.giftedtech.co.ke](https://secureauth.giftedtech.co.ke)**
+**[https://secureauth.gifted.co.ke](https://secureauth.gifted.co.ke)**
 
 ---
 
@@ -221,9 +221,9 @@ Built by **Maurice Gift** — feel free to reach out:
 
 | | |
 |---|---|
-| Portfolio | [me.giftedtech.co.ke](https://me.giftedtech.co.ke) |
-| API / Services | [api.giftedtech.co.ke/contact](https://api.giftedtech.co.ke/contact) |
-| WhatsApp Channel | [Follow on WhatsApp](https://whatsapp.com/channel/0029Vb6lNd511ulWbxu1cT3A) |
+| Portfolio | [me.gifted.co.ke](https://me.gifted.co.ke) |
+| API / Services | [api.gifted.co.ke/contact](https://api.gifted.co.ke/contact) |
+| WhatsApp Channel | [Follow on WhatsApp](https://whatsapp.com/channel/0029VbCpYtZLtOj5LDuj7Q1p) |
 | GitHub | [github.com/mauricegift](https://github.com/mauricegift) |
 
 ---
