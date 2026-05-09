@@ -21,7 +21,7 @@ module.exports = {
 
   ALLOWED_ORIGINS: (
     process.env.ALLOWED_ORIGINS ||
-    "https://secureauth.giftedtech.co.ke,http://localhost:5000,https://yourdomain.com"
+    "https://secureauth.gifted.co.ke,http://localhost:5000,https://yourdomain.com"
   )
     .split(",")
     .map((o) => o.trim())
